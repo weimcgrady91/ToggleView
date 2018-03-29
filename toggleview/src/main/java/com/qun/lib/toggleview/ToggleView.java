@@ -9,7 +9,6 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
@@ -61,10 +60,10 @@ public class ToggleView extends View {
             public boolean onSingleTapUp(MotionEvent e) {
                 if (mChecked) {
                     int dx = getMeasuredWidth() - mSlider.getWidth();
-                    mScroller.startScroll(getScrollX(), 0, dx, 0, 500);
+                    mScroller.startScroll(getScrollX(), 0, dx, 0, 300);
                 } else {
                     int dx = getMeasuredWidth() - mSlider.getWidth();
-                    mScroller.startScroll(0, 0, -dx, 0, 500);
+                    mScroller.startScroll(0, 0, -dx, 0, 300);
                 }
                 mChecked = !mChecked;
                 invalidate();
@@ -79,10 +78,27 @@ public class ToggleView extends View {
         mScroller = new Scroller(context, new LinearInterpolator());
     }
 
+    public void setChecked(boolean checked) {
+        mChecked = checked;
+        if(!mScroller.isFinished()){
+            mScroller.abortAnimation();
+        }
+        invalidate();
+    }
+
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         canvas.drawBitmap(mSlider, 0, 0, mPaint);
+        if (mIsMove) {
+            return;
+        }
+        if (mChecked) {
+            scrollTo(-(getMeasuredWidth() - mSlider.getWidth()), 0);
+        } else {
+            scrollTo(0, 0);
+        }
+
     }
 
 
@@ -127,7 +143,6 @@ public class ToggleView extends View {
             case MotionEvent.ACTION_MOVE:
                 int currentX = (int) event.getX();
                 int currentY = (int) event.getY();
-                Log.e("weiqun12345", "currentX=" + currentX + ",currentY=" + currentY);
                 break;
             case MotionEvent.ACTION_UP:
 
@@ -141,15 +156,5 @@ public class ToggleView extends View {
         return mChecked;
     }
 
-    public void setChecked(boolean checked) {
-        mChecked = checked;
-        if (checked) {
-            int dx = getMeasuredWidth() - mSlider.getWidth();
-            Log.e("weiqun12345", "getMeasuredWidth=" + getMeasuredWidth() + "setChecked dx=" + dx);
-            scrollTo(-dx, 0);
-        } else {
-            int dx = getMeasuredWidth() - mSlider.getWidth();
-            scrollTo(0, 0);
-        }
-    }
+
 }
