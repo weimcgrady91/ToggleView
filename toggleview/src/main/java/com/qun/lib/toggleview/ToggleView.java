@@ -29,6 +29,15 @@ public class ToggleView extends View {
     private Scroller mScroller;
     private boolean mIsMove;
 
+    public void setOnCheckedChangeListener(OnCheckedChangeListener onCheckedChangeListener) {
+        mOnCheckedChangeListener = onCheckedChangeListener;
+    }
+
+    private OnCheckedChangeListener mOnCheckedChangeListener;
+
+    public interface OnCheckedChangeListener {
+        void onCheckedChanged(ToggleView view, boolean check);
+    }
     public ToggleView(Context context) {
         this(context, null);
     }
@@ -67,6 +76,9 @@ public class ToggleView extends View {
                 }
                 mChecked = !mChecked;
                 invalidate();
+                if (mOnCheckedChangeListener != null) {
+                    mOnCheckedChangeListener.onCheckedChanged(ToggleView.this, mChecked);
+                }
                 return super.onSingleTapUp(e);
             }
 
